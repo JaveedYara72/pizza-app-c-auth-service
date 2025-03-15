@@ -1,1 +1,3 @@
-console.log("HIiiiii");
+function welcome() {
+    console.log("Hello Ji, Sat Sri Akal");
+}
