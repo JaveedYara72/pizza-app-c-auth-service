@@ -1,3 +1,5 @@
-function welcome() {
-    console.log("Hello Ji, Sat Sri Akal");
+function welcome(name: string) {
+    console.log(`Hello ${name} Ji, Sat Sri Akal`);
 }
+
+welcome("Javeed");
