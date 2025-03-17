@@ -1,5 +1,3 @@
-function welcome(name: string) {
-    console.log(`Hello ${name} Ji, Sat Sri Akal`);
-}
+import { Config } from "./config";
 
-welcome("Javeed");
+console.log(Config.PORT);
