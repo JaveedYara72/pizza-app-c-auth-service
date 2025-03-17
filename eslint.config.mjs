@@ -8,6 +8,11 @@ export default tseslint.config(
     tseslint.configs.strict,
     tseslint.configs.stylistic,
     {
-        ignores: ["dist", "node_modules", "eslint.config.mjs"],
+        ignores: [
+            "dist",
+            "node_modules",
+            "eslint.config.mjs",
+            "jest.config.js",
+        ],
     },
 );
