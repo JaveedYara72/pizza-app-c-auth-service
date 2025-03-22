@@ -4,8 +4,13 @@ import { User } from "../entity/User";
 import { UserData } from "../types/index";
 
 export class UserService {
-    constructor(private userReporepository: Repository<User>) {
-        this.userReporepository = userReporepository;
+    // this.userRepository is the property of UserService
+    // which is of type Repository<User>
+    // Repository<User> is the type of the user repository
+    // which is the type of the user entity
+    // which is the type of the user table
+    constructor(private userRepository: Repository<User>) {
+        this.userRepository = userRepository;
     }
 
     async create({ firstName, lastName, email, password }: UserData) {
