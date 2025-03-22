@@ -1,5 +1,4 @@
 import { Repository } from "typeorm";
-import { AppDataSource } from "../config/data-source";
 import { User } from "../entity/User";
 import { UserData } from "../types/index";
 
@@ -9,9 +8,7 @@ export class UserService {
     // Repository<User> is the type of the user repository
     // which is the type of the user entity
     // which is the type of the user table
-    constructor(private userRepository: Repository<User>) {
-        this.userRepository = userRepository;
-    }
+    constructor(private userRepository: Repository<User>) {}
 
     async create({ firstName, lastName, email, password }: UserData) {
         // create user
@@ -19,8 +16,12 @@ export class UserService {
 
         // we are decoupling bc, why the fuck?? Why cant we just simply build applications
         // instead of wasting time here?
-        const userRepository = AppDataSource.getRepository(User);
         // save the user
-        await userRepository.save({ firstName, lastName, email, password });
+        await this.userRepository.save({
+            firstName,
+            lastName,
+            email,
+            password,
+        });
     }
 }

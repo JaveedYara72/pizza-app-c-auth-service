@@ -10,6 +10,7 @@ import { User } from "../entity/User";
 // Initialize express router
 const router = express.Router();
 
+// Dependency Injections
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository);
 // create an instance of the controller

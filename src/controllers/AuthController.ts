@@ -7,11 +7,7 @@ import { RegisterUserRequest } from "../types/index";
 import { UserService } from "../services/UserServices";
 
 export class AuthController {
-    userService: UserService;
-
-    constructor(userService: UserService) {
-        this.userService = userService;
-    }
+    constructor(private userService: UserService) {}
 
     async register(req: RegisterUserRequest, res: Response) {
         // import all the details
