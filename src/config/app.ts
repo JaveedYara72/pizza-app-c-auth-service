@@ -4,14 +4,25 @@ import { HttpError } from "http-errors";
 // logger import
 import logger from "./logger";
 
+// router import
+import authRouter from "../routes/auth";
+
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
+// Health Check endpoint
+app.get("/health", (req: Request, res: Response) => {
+    res.status(200).send("OK");
+});
+
+app.get("/", (req: Request, res: Response) => {
     res.send("Hello World");
 });
+
+// Auth Routes
+app.use("/auth", authRouter);
 
 // global error handler - middleware
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
