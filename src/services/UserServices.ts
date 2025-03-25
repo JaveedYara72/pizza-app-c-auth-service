@@ -1,5 +1,6 @@
 import { Repository } from "typeorm";
 import { User } from "../entity/User";
+import bcrypt from "bcrypt";
 import { UserData } from "../types/index";
 import createHttpError from "http-errors";
 import { Roles } from "../constants/index";
@@ -17,8 +18,24 @@ export class UserService {
     constructor(private userRepository: Repository<User>) {}
 
     async create({ firstName, lastName, email, password }: UserData) {
-        // create user
-        // get the user repository
+        // check if the user already exists with that email
+        const user = await this.userRepository.findOne({
+            where: { email: email },
+        });
+
+        // if the user already exists with that email,
+        // then throw an error
+        if (user) {
+            const error = createHttpError(
+                400,
+                "User already exists with that email",
+            );
+            throw error;
+        }
+
+        // hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         // we are decoupling bc, why the fuck?? Why cant we just simply build applications
         // instead of wasting time here?
@@ -28,7 +45,7 @@ export class UserService {
                 firstName,
                 lastName,
                 email,
-                password,
+                password: hashedPassword,
                 role: Roles.CUSTOMER,
             });
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
