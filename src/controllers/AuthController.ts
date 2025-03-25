@@ -7,6 +7,13 @@ import { UserService } from "../services/UserServices";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
 
+// import jwt
+import { JwtPayload, sign } from "jsonwebtoken";
+
+import fs from "fs";
+import path from "path";
+import createHttpError from "http-errors";
+
 export class AuthController {
     constructor(
         private userService: UserService,
@@ -37,6 +44,52 @@ export class AuthController {
             });
 
             this.logger.info("User created successfully", { id: user.id });
+
+            // Make a cookie with access token and refresh token
+            // generate the privatekey, public key using internal crypto module
+
+            let privateKey: string;
+            try {
+                privateKey = fs.readFileSync(
+                    path.join(__dirname, "../../certs/private.pem"),
+                    "utf-8", // Added encoding parameter
+                );
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (err) {
+                const error = createHttpError(
+                    500,
+                    "Error while reading the private key",
+                );
+                return next(error); // Added return statement
+            }
+
+            const payload: JwtPayload = {
+                sub: String(user.id),
+                role: user.role,
+            };
+
+            const accessToken = sign(payload, privateKey, {
+                algorithm: "RS256",
+                expiresIn: "1h",
+                issuer: "auth-service",
+            });
+
+            const refreshToken = "blahblah";
+
+            res.cookie("accessToken", accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60, // one hour
+                httpOnly: true,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60 * 24 * 365, // one year
+                httpOnly: true,
+            });
+
             res.status(201).json({
                 message: "User created successfully",
                 id: user.id,
