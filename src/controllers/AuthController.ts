@@ -13,6 +13,7 @@ import { JwtPayload, sign } from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
 import createHttpError from "http-errors";
+import { Config } from "../config/index";
 
 export class AuthController {
     constructor(
@@ -74,7 +75,13 @@ export class AuthController {
                 issuer: "auth-service",
             });
 
-            const refreshToken = "blahblah";
+            // adding this exclamation mark says that its not null.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET!, {
+                algorithm: "HS256",
+                expiresIn: "1y",
+                issuer: "auth-service",
+            });
 
             res.cookie("accessToken", accessToken, {
                 domain: "localhost",
