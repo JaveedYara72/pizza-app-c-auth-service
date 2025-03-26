@@ -14,6 +14,8 @@ import fs from "fs";
 import path from "path";
 import createHttpError from "http-errors";
 import { Config } from "../config/index";
+import { AppDataSource } from "../config/data-source";
+import { RefreshToken } from "../entity/RefreshToken";
 
 export class AuthController {
     constructor(
@@ -75,12 +77,23 @@ export class AuthController {
                 issuer: "auth-service",
             });
 
+            // Persist the refresh token.
+            const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
+            const refreshTokenRepository =
+                AppDataSource.getRepository(RefreshToken);
+            const newRefreshToken = await refreshTokenRepository.save({
+                user: user,
+                // this should be a value of a future time, because we have decided to keep it 1year.
+                expiresAt: new Date(Date.now() + MS_IN_YEAR),
+            });
+
             // adding this exclamation mark says that its not null.
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET!, {
                 algorithm: "HS256",
                 expiresIn: "1y",
                 issuer: "auth-service",
+                jwtid: String(newRefreshToken.id),
             });
 
             res.cookie("accessToken", accessToken, {
